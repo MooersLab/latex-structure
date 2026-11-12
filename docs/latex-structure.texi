@@ -1,0 +1,804 @@
+\input texinfo    @c -*- texinfo -*-
+@c %**start of header
+@setfilename latex-structure.info
+@settitle @LaTeX{} Structure
+@documentencoding UTF-8
+@documentlanguage en
+@syncodeindex fn cp
+@syncodeindex vr cp
+@c %**end of header
+
+@copying
+This manual is for @LaTeX{} Structure version 0.1.0.
+
+Copyright (C) 2026 Blaine Mooers.
+
+@quotation
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.3 or any later version published by the Free Software
+Foundation, with no Invariant Sections, no Front-Cover Texts, and no
+Back-Cover Texts.
+
+@end quotation
+@end copying
+
+@dircategory Emacs misc features
+@direntry
+* LaTeX Structure: (latex-structure). Org-style structure editing for LaTeX buffers.
+@end direntry
+
+@finalout
+@titlepage
+@title LaTeX Structure
+@subtitle Org-style structure editing for @LaTeX{} buffers
+@author Blaine Mooers (@email{blaine-mooers@@ou.edu})
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@ifnottex
+@node Top
+@top @LaTeX{} Structure
+@end ifnottex
+
+@menu
+* Overview::
+* Installation::
+* Getting started::
+* Sections::
+* Refiling across a document::
+* Indirect buffers::
+* Sparse trees::
+* List items::
+* Key bindings::
+* Speed commands::
+* Customization::
+* Functions for Lisp code::
+* Troubleshooting::
+* Index::
+
+@detailmenu
+--- The Detailed Node Listing ---
+
+Overview
+
+* Relation to latex-speed-commands::
+* Org commands and their analogs::
+
+Installation
+
+* Install from source::
+* Install from MELPA::
+* Requirements::
+
+Sections
+
+* Section boundaries::
+* Moving, promoting, and demoting: Moving promoting and demoting. 
+
+Refiling across a document
+
+* Which files take part::
+* Targets::
+* Where the section lands::
+* Jumping to a heading::
+
+List items
+
+* Moving items::
+* Indenting and outdenting::
+* Changing the list type::
+
+@end detailmenu
+@end menu
+
+@node Overview
+@chapter Overview
+
+@cindex overview
+@cindex structure editing, idea
+
+@LaTeX{} Structure ports the structure editing commands of Org mode to
+@LaTeX{} buffers.  It treats the sectioning commands @code{\part} through
+@code{\subparagraph} as Org headlines.  It treats the items of @code{itemize},
+@code{enumerate}, and @code{description} environments as Org plain list items.
+
+With the package you can do the following.
+
+@itemize
+@item
+Refile a section under any heading of the document, in this file
+or in another chapter file, with @code{C-c C-w}.  Heading levels change
+to fit the new parent.
+@item
+Jump to any heading of the document with @code{C-u C-c C-w}.
+@item
+Show one section alone in an indirect buffer with @code{C-c C-x b}.
+@item
+Build a sparse tree of the lines that match a regexp with @code{C-c /}.
+@item
+Move, indent, and outdent list items with the Meta-arrow keys, and
+cycle a list between @code{itemize}, @code{enumerate}, and @code{description} with
+@code{C-c -}.
+@item
+Move, promote, and demote sections with the same Meta-arrow keys
+that Org uses.
+@end itemize
+
+The package works with the built-in @code{latex-mode} and with the
+@code{LaTeX-mode} of AUC@TeX{}.  It needs no other package.
+
+@menu
+* Relation to latex-speed-commands::
+* Org commands and their analogs::
+@end menu
+
+@node Relation to latex-speed-commands
+@section Relation to latex-speed-commands
+
+@cindex latex-speed-commands
+@cindex companion package
+
+@LaTeX{} Structure is a companion to @LaTeX{} Speed Commands, which gives
+@LaTeX{} the single-key speed commands of Org.  The two packages are
+independent.  When both are loaded, the command
+@code{latex-structure-speed-commands-setup} adds speed keys for refiling,
+sparse trees, and list items.  See @ref{Speed commands}.
+
+@node Org commands and their analogs
+@section Org commands and their analogs
+
+@cindex Org analogs
+
+The next table lists each Org command and its analog in this package.
+
+@float Table,org5c86b8f
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Org command
+@tab @LaTeX{} Structure command
+@tab Key
+@item @code{org-refile}
+@tab @code{latex-structure-refile}
+@tab @code{C-c C-w}
+@item @code{org-refile} with @code{C-u}
+@tab @code{latex-structure-goto}
+@tab @code{C-u C-c C-w}
+@item @code{org-refile-copy}
+@tab @code{latex-structure-refile-copy}
+@tab @code{C-c M-w}
+@item @code{org-tree-to-indirect-buffer}
+@tab @code{latex-structure-tree-to-indirect-buffer}
+@tab @code{C-c C-x b}
+@item @code{org-sparse-tree}
+@tab @code{latex-structure-sparse-tree}
+@tab @code{C-c /}
+@item @code{org-metaup}, @code{org-metadown}
+@tab @code{latex-structure-metaup}, @code{-metadown}
+@tab @code{M-<up>}, @code{M-<down>}
+@item @code{org-metaleft}, @code{org-metaright}
+@tab @code{latex-structure-metaleft}, @code{-metaright}
+@tab @code{M-<left>}, @code{M-<right>}
+@item @code{org-shiftmetaleft}
+@tab @code{latex-structure-shiftmetaleft}
+@tab @code{M-S-<left>}
+@item @code{org-shiftmetaright}
+@tab @code{latex-structure-shiftmetaright}
+@tab @code{M-S-<right>}
+@item @code{org-cycle-list-bullet}
+@tab @code{latex-structure-cycle-list-type}
+@tab @code{C-c -}
+@end multitable
+@caption{Org commands and their @LaTeX{} Structure analogs.}
+@end float
+
+@node Installation
+@chapter Installation
+
+@cindex installation
+
+@menu
+* Install from source::
+* Install from MELPA::
+* Requirements::
+@end menu
+
+@node Install from source
+@section Install from source
+
+@cindex install from source
+
+Clone the repository and add it to the load path.
+
+@lisp
+(add-to-list 'load-path "~/path/to/latex-structure")
+(require 'latex-structure)
+(add-hook 'LaTeX-mode-hook #'latex-structure-mode) ; AUCTeX
+(add-hook 'latex-mode-hook #'latex-structure-mode) ; built-in mode
+@end lisp
+
+With @code{use-package} and a local checkout:
+
+@lisp
+(use-package latex-structure
+  :load-path "~/path/to/latex-structure"
+  :hook ((LaTeX-mode latex-mode) . latex-structure-mode))
+@end lisp
+
+@node Install from MELPA
+@section Install from MELPA
+
+@cindex MELPA
+
+When the package is on MELPA, install it with @code{M-x package-install
+RET latex-structure RET} and add the hooks above without the
+@code{load-path} line.
+
+@node Requirements
+@section Requirements
+
+@cindex requirements
+
+The package needs Emacs 28.1 or newer.  AUC@TeX{} is optional.  The mode
+line shows @samp{Struct} when @code{latex-structure-mode} is on.
+
+@node Getting started
+@chapter Getting started
+
+@cindex getting started
+@cindex tutorial
+
+Copy this small document into a buffer and turn on
+@code{latex-structure-mode}.
+
+@example
+\documentclass@{book@}
+\begin@{document@}
+\chapter@{Introduction@}
+\section@{Alpha@}
+Alpha text.
+\section@{Beta@}
+Beta text.
+\begin@{itemize@}
+\item one
+\item two
+\item three
+\end@{itemize@}
+\chapter@{Methods@}
+Methods text.
+\end@{document@}
+@end example
+
+@enumerate
+@item
+Put point anywhere on the line @samp{\section@{Beta@}} and press
+@code{M-<up>}.  Beta moves above Alpha.  Press @code{M-<down>} to move it
+back.
+@item
+On the same line press @code{M-<right>}.  The heading becomes
+@samp{\subsection@{Beta@}}.  Press @code{M-<left>} to promote it again.
+@item
+Press @code{C-c C-w}.  The minibuffer offers targets such as
+@samp{*scratch*: Methods}.  Choose the Methods target.  Beta and its
+list move to the end of the Methods chapter.
+@item
+Put point on @samp{\item two} and press @code{M-<right>}.  The item moves
+into a new nested @code{itemize} inside @samp{\item one}.  Press @code{M-<left>}
+to move it back out.
+@item
+Press @code{C-c -} inside the list.  The list becomes @code{enumerate}.
+@item
+Press @code{C-c /} and type @samp{text}.  Only the matching lines and the
+headings above them stay visible.  Run @code{M-x
+   latex-structure-sparse-tree-remove} to show everything again.
+@end enumerate
+
+@node Sections
+@chapter Sections
+
+@cindex sections
+@cindex headings
+
+A heading is a line that starts, after optional indentation and an
+optional comment prefix, with a command listed in
+@code{latex-structure-section-levels}.  The default list is @code{\part},
+@code{\chapter}, @code{\section}, @code{\subsection}, @code{\subsubsection}, @code{\paragraph},
+and @code{\subparagraph}.  Starred forms and optional short titles count.
+
+A section starts at its heading and runs to the next heading of the
+same or a higher rank.  Its subsections travel with it.
+
+@menu
+* Section boundaries::
+* Moving, promoting, and demoting: Moving promoting and demoting. 
+@end menu
+
+@node Section boundaries
+@section Section boundaries
+
+@cindex section boundaries
+@cindex \include, as a boundary
+@vindex latex-structure-section-boundary-regexp
+
+Some lines end every section that comes before them, whatever the
+level.  The defaults are @samp{\end@{document@}}, @samp{\appendix},
+@samp{\frontmatter}, @samp{\mainmatter}, @samp{\backmatter}, @samp{\bibliography@{...@}},
+@samp{\printbibliography}, and @samp{\include@{...@}}.  Because of this, moving
+or refiling the last section of a master file never carries the
+bibliography, the end of the document, or the @code{\include} lines of
+the other chapters along with it.  Change the list with
+@code{latex-structure-section-boundary-regexp}.
+
+@node Moving promoting and demoting
+@section Moving, promoting, and demoting
+
+@cindex moving sections
+@cindex promoting headings
+@cindex demoting headings
+@findex latex-structure-move-section-up
+@findex latex-structure-move-section-down
+@findex latex-structure-promote-heading
+@findex latex-structure-demote-heading
+@findex latex-structure-promote-section
+@findex latex-structure-demote-section
+
+These commands act when point is anywhere on a heading line.
+
+@itemize
+@item
+@code{M-<up>} and @code{M-<down>} swap the section with its previous or next
+sibling.  A section cannot move past its parent.
+@item
+@code{M-<left>} and @code{M-<right>} promote or demote the heading line only.
+@item
+@code{M-S-<left>} and @code{M-S-<right>} promote or demote the heading and
+every heading inside the section.
+@end itemize
+
+A change of level is all or nothing.  When any heading in the section
+would leave the range of @code{latex-structure-section-levels}, nothing
+changes and an error explains why.
+
+@node Refiling across a document
+@chapter Refiling across a document
+
+@cindex refiling
+@cindex multi-file documents
+@findex latex-structure-refile
+@findex latex-structure-refile-copy
+
+@code{C-c C-w} runs @code{latex-structure-refile}.  It moves the section around
+point under another heading, in the same file or in another file of
+the document.  @code{C-c M-w} runs @code{latex-structure-refile-copy}, which
+leaves the original section in place.
+
+@menu
+* Which files take part::
+* Targets::
+* Where the section lands::
+* Jumping to a heading::
+@end menu
+
+@node Which files take part
+@section Which files take part
+
+@cindex master file
+@cindex TeX-master
+@findex latex-structure-project-files
+@vindex latex-structure-include-regexp
+
+The package finds the master file in this order.
+
+@enumerate
+@item
+The value of @code{TeX-master}, when AUC@TeX{} has set it to a file name.
+@item
+The value of @code{tex-main-file} in the built-in mode.
+@item
+The file of the current buffer.
+@end enumerate
+
+From the master file it follows @code{\input}, @code{\include}, @code{\subfile},
+@code{\import}, and @code{\subimport} in document order.  Names in @code{\input} and
+@code{\include} are relative to the directory of the master file, as in
+@LaTeX{}.  A missing @code{.tex} extension is added.  Commented-out lines are
+skipped.  The buffer of a file that is open counts with its unsaved
+edits.  Change the include commands with
+@code{latex-structure-include-regexp}.
+
+@node Targets
+@section Targets
+
+@cindex refile targets
+@vindex latex-structure-refile-include-commented
+
+Each target shows the file name and the path of titles down to the
+heading, for example @samp{chapters/ch02.tex: Methods / Sample preparation}.
+Each file also offers a target named @samp{ch02.tex (top level)}.  Two
+headings with the same path get a suffix such as @samp{<2>}.
+Commented-out headings are left out, unless
+@code{latex-structure-refile-include-commented} is non-nil.
+
+@node Where the section lands
+@section Where the section lands
+
+@cindex heading levels, refile
+@vindex latex-structure-refile-adjust-levels
+
+The section becomes the last child of the target heading.  When
+@code{latex-structure-refile-adjust-levels} is non-nil, which is the
+default, its headings change rank to fit.  A @code{\section} refiled under
+another @code{\section} becomes a @code{\subsection}, and its subsections move
+down one rank too.  A section refiled under a @code{\chapter} stays a
+@code{\section}.
+
+A section refiled to the top level of a file keeps its levels.  It
+lands after the last section of the file and before
+@samp{\end@{document@}} or the bibliography.
+
+Refiling into another file visits that file and leaves it modified
+but unsaved, so you can review the change before you save.  A section
+cannot be refiled into itself or into one of its own subsections.
+
+@node Jumping to a heading
+@section Jumping to a heading
+
+@cindex goto
+@findex latex-structure-goto
+
+@code{C-u C-c C-w} offers the same targets but only jumps to the chosen
+heading.  This is the analog of @code{org-goto} and of @code{org-refile} with a
+prefix argument.  The command @code{latex-structure-goto} does the same
+thing.  The mark is set before the jump, so @code{C-u C-SPC} returns.
+
+@node Indirect buffers
+@chapter Indirect buffers
+
+@cindex indirect buffer
+@findex latex-structure-tree-to-indirect-buffer
+@vindex latex-structure-indirect-buffer-display
+
+@code{C-c C-x b} runs @code{latex-structure-tree-to-indirect-buffer}.  It
+shows the current section alone in an indirect buffer named after
+the file and the section title.  Edits there change the original
+buffer.  The command reuses one indirect buffer and kills the
+previous one, unless you give it a prefix argument.
+
+Choose where the buffer appears with
+@code{latex-structure-indirect-buffer-display}.  The values are
+@code{other-window}, @code{current-window}, and @code{new-frame}.
+
+@node Sparse trees
+@chapter Sparse trees
+
+@cindex sparse tree
+@findex latex-structure-sparse-tree
+@findex latex-structure-sparse-tree-remove
+
+@code{C-c /} runs @code{latex-structure-sparse-tree}.  It asks for a regexp and
+hides every line except the matching lines and the headings above
+them.  The matches are highlighted with the face
+@code{latex-structure-sparse-match}.  An ellipsis marks each hidden
+stretch.  Isearch opens a hidden stretch when a match lies inside it.
+
+Show the whole buffer again with @code{latex-structure-sparse-tree-remove},
+by calling @code{C-c /} with an empty regexp, or by turning the mode off.
+
+@node List items
+@chapter List items
+
+@cindex list items
+@cindex itemize, enumerate, description
+@vindex latex-structure-list-environments
+
+An item starts at @code{\item} and runs to the next @code{\item} of the same
+list or to the @code{\end} of the list.  Nested lists inside an item
+belong to that item and travel with it.  Commands such as @code{\itemsep}
+are not items.  The list environments are those in
+@code{latex-structure-list-environments}.  Add enumitem clones or your own
+list environments there.
+
+@menu
+* Moving items::
+* Indenting and outdenting::
+* Changing the list type::
+@end menu
+
+@node Moving items
+@section Moving items
+
+@cindex moving items
+@findex latex-structure-move-item-up
+@findex latex-structure-move-item-down
+@findex latex-structure-next-item
+@findex latex-structure-previous-item
+
+Inside an item, @code{M-<up>} and @code{M-<down>} swap it with the previous or
+next item of the same list.  Point stays at the same place inside
+the moved item.  The commands @code{latex-structure-next-item} and
+@code{latex-structure-previous-item} move point between items.
+
+@node Indenting and outdenting
+@section Indenting and outdenting
+
+@cindex indenting items
+@cindex outdenting items
+@findex latex-structure-indent-item
+@findex latex-structure-outdent-item
+@vindex latex-structure-reindent
+
+@code{M-<right>} makes the item the last child of the previous item.  When
+the previous item already ends with a nested list, the item joins
+that list.  Otherwise a new nested list of the same type is made.
+The first item of a list cannot be indented.
+
+@code{M-<left>} makes a nested item the sibling that follows its parent
+item.  When it was the only item of its nested list, the empty list
+is removed.  An item of a top-level list cannot be outdented.
+
+After an indent or outdent the list is reindented with the
+indentation rules of the major mode.  Set @code{latex-structure-reindent}
+to nil to keep the text as it is.
+
+@node Changing the list type
+@section Changing the list type
+
+@cindex list type
+@findex latex-structure-cycle-list-type
+@vindex latex-structure-list-cycle
+
+@code{C-c -} changes the innermost list around point to the next type in
+@code{latex-structure-list-cycle}.  The default cycle is @code{itemize},
+@code{enumerate}, @code{description}, and back to @code{itemize}.  With @code{C-u} the
+command asks for the type.  Both the @code{\begin} and the @code{\end} line
+change.  Labels of @code{description} items are not added or removed.
+
+@node Key bindings
+@chapter Key bindings
+
+@cindex key bindings
+@cindex conditional keys
+@findex latex-structure-mode
+
+The Meta-arrow keys and @code{C-c -} are conditional.  They act only on a
+heading line or in a list, and elsewhere they keep their usual
+meaning, so @code{M-<left>} still moves back one word in body text.
+
+@float Table,org16d14c2
+@multitable {aaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab On a heading line
+@tab In a list item
+@item @code{M-<up>}
+@tab Move section up
+@tab Move item up
+@item @code{M-<down>}
+@tab Move section down
+@tab Move item down
+@item @code{M-<left>}
+@tab Promote heading line
+@tab Outdent item
+@item @code{M-<right>}
+@tab Demote heading line
+@tab Indent item
+@item @code{M-S-<left>}
+@tab Promote whole section
+@tab Outdent item
+@item @code{M-S-<right>}
+@tab Demote whole section
+@tab Indent item
+@item @code{C-c -}
+@tab Not active
+@tab Cycle the list type
+@end multitable
+@caption{Key bindings of latex-structure-mode.}
+@end float
+
+@float Table,org312dbee
+@multitable {aaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Command
+@item @code{C-c C-w}
+@tab @code{latex-structure-refile}
+@item @code{C-u C-c C-w}
+@tab Jump to a heading, like @code{latex-structure-goto}
+@item @code{C-c M-w}
+@tab @code{latex-structure-refile-copy}
+@item @code{C-c C-x b}
+@tab @code{latex-structure-tree-to-indirect-buffer}
+@item @code{C-c /}
+@tab @code{latex-structure-sparse-tree}
+@end multitable
+@caption{Keys of latex-structure-mode that act anywhere.}
+@end float
+
+To use other keys, change @code{latex-structure-mode-map}.
+
+@lisp
+(with-eval-after-load 'latex-structure
+  (define-key latex-structure-mode-map (kbd "C-c C-w") nil)
+  (define-key latex-structure-mode-map (kbd "C-c r") #'latex-structure-refile))
+@end lisp
+
+@node Speed commands
+@chapter Speed commands
+
+@cindex speed commands
+@findex latex-structure-speed-commands-setup
+@vindex latex-structure-speed-commands
+@vindex latex-structure-item-speed-commands
+
+When you also use @LaTeX{} Speed Commands, add single-key commands after
+both packages load.
+
+@lisp
+(with-eval-after-load 'latex-speed-commands
+  (require 'latex-structure)
+  (latex-structure-speed-commands-setup))
+@end lisp
+
+The setup puts the entries of @code{latex-structure-speed-commands} at the
+front of @code{latex-speed-commands}, so they win over entries with the
+same key.  It also adds @code{latex-structure-item-speed-activate} to
+@code{latex-speed-commands-activate-functions}, which makes the keys in
+@code{latex-structure-item-speed-commands} active at the start of an
+@code{\item} line.  The start is the beginning of the line or the
+@code{\item} token after the indentation.  Calling the setup twice adds
+nothing new.
+
+@float Table,orga532e2c
+@multitable {aaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Command
+@item @code{W}
+@tab Refile the section
+@item @code{g}
+@tab Jump to any heading in the document
+@item @code{T}
+@tab Show the section in an indirect buffer
+@item @code{/}
+@tab Sparse tree, in place of @code{occur}
+@end multitable
+@caption{Speed keys at heading lines.}
+@end float
+
+@float Table,orgaa365a9
+@multitable {aaa} {aaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Command
+@item @code{n}
+@tab Next item
+@item @code{p}
+@tab Previous item
+@item @code{U}
+@tab Move item up
+@item @code{D}
+@tab Move item down
+@item @code{l}
+@tab Outdent item
+@item @code{r}
+@tab Indent item
+@item @code{-}
+@tab Cycle the list type
+@end multitable
+@caption{Speed keys at the start of an \item line.}
+@end float
+
+Org uses @code{w} for refiling, but @LaTeX{} Speed Commands uses @code{w} to copy a
+section.  That is why refiling is on @code{W}.
+
+@node Customization
+@chapter Customization
+
+@cindex customization
+@cindex options
+
+Type @code{M-x customize-group RET latex-structure RET} to see all options.
+The next table summarizes them.
+
+@float Table,orgacad11b
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Option
+@tab Purpose
+@item @code{latex-structure-section-levels}
+@tab Sectioning commands and their levels
+@item @code{latex-structure-section-boundary-regexp}
+@tab Lines that end every section before them
+@item @code{latex-structure-list-environments}
+@tab Environments whose items are list items
+@item @code{latex-structure-list-cycle}
+@tab List types visited by @code{C-c -}
+@item @code{latex-structure-reindent}
+@tab Reindent a list after indent or outdent
+@item @code{latex-structure-refile-adjust-levels}
+@tab Change heading ranks to fit the refile target
+@item @code{latex-structure-refile-include-commented}
+@tab Offer commented-out headings as targets
+@item @code{latex-structure-include-regexp}
+@tab Commands that pull other files into the document
+@item @code{latex-structure-indirect-buffer-display}
+@tab Where the indirect buffer appears
+@item @code{latex-structure-speed-commands}
+@tab Speed keys at heading lines
+@item @code{latex-structure-item-speed-commands}
+@tab Speed keys at @code{\item} lines
+@item @code{latex-structure-lighter}
+@tab Mode line text
+@end multitable
+@caption{User options of latex-structure.}
+@end float
+
+The face @code{latex-structure-sparse-match} highlights sparse tree
+matches.
+
+@node Functions for Lisp code
+@chapter Functions for Lisp code
+
+@cindex Lisp interface
+@cindex API
+@findex latex-structure-section-bounds
+@findex latex-structure-item-at
+@findex latex-structure-master-file
+
+A few functions are useful in your own commands.
+
+@itemize
+@item
+@code{(latex-structure-section-bounds)} returns @code{(BEG END LEVEL)} for
+the section around point.
+@item
+@code{(latex-structure-heading-title POS)} returns the title of the
+heading at POS@.
+@item
+@code{(latex-structure-item-at &optional POS)} returns a plist with the
+list around POS, all of its items, and the index of the item at
+POS, or nil.
+@item
+@code{(latex-structure-master-file)} and
+@code{(latex-structure-project-files)} return the master file and all
+files of the document.
+@end itemize
+
+The generated API reference in @samp{docs/api/latex-structure-api.md}
+lists every function and option with its docstring.
+
+@node Troubleshooting
+@chapter Troubleshooting
+
+@cindex troubleshooting
+@cindex FAQ
+
+@table @asis
+@item A Meta-arrow key does nothing special.
+Check that the mode line
+shows @samp{Struct} and that point is on a heading line or inside an
+item.  Text before the first @code{\item} of a list is not inside an
+item.
+@item The refile list misses a chapter file.
+Check that the chapter is
+pulled in with one of the commands in
+@code{latex-structure-include-regexp} and that @code{TeX-master} names the
+master file in chapter buffers.  Paths built from macros, such as
+@code{\input@{\chapdir/ch1@}}, cannot be followed.
+@item A refiled section has the wrong level.
+Set
+@code{latex-structure-refile-adjust-levels} to nil to keep levels, or
+promote and demote the section afterward with @code{M-S-<left>} and
+@code{M-S-<right>}.
+@item AUC@TeX{} already uses a key.
+Minor mode maps take priority over
+the major mode map.  Rebind the key in @code{latex-structure-mode-map}
+as shown in @ref{Key bindings}.
+@item Evil users.
+In normal state, Evil reads the Meta-arrow keys
+before this package does.  The keys work in insert and Emacs
+states.
+@end table
+
+@node Index
+@chapter Index
+
+@printindex cp
+
+@bye

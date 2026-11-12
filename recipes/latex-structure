@@ -1,0 +1,2 @@
+(latex-structure :fetcher github
+                 :repo "MooersLab/latex-structure")

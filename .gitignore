@@ -1,0 +1,21 @@
+# Byte code and native code
+*.elc
+*.eln
+/eln-cache/
+
+# Local dependencies fetched by make install-test-deps
+/.deps/
+
+# Coverage
+coverage.lcov
+/htmlcov/
+
+# Generated documentation (the .texi stays in git for MELPA)
+/docs/site/
+/docs/*.info
+/docs/dir
+
+# Editor files
+*~
+\#*\#
+.\#*
