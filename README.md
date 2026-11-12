@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/static/v1?label=list-manager&message=1.1.0&color=brightcolor)
+![Version](https://img.shields.io/static/v1?label=latex-structure&message=0.1.0&color=brightcolor)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Emacs](https://img.shields.io/badge/Emacs-26.1+-purple.svg)](https://www.gnu.org/software/emacs/)
 
