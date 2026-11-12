@@ -1,3 +1,7 @@
+![Version](https://img.shields.io/static/v1?label=list-manager&message=1.1.0&color=brightcolor)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Emacs](https://img.shields.io/badge/Emacs-26.1+-purple.svg)](https://www.gnu.org/software/emacs/)
+
 # Org-style structure editing for LaTeX buffers in Emacs
 
 I work both in org-mode and LaTeX documents every day.
