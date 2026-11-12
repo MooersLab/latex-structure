@@ -2,8 +2,8 @@
 
 I work both in org-mode and LaTeX documents every day.
 Org mode has features that LaTeX lacks, and I miss them.
-This is part of my attempt to add some of the best of org mode to LaTeX.
-This also makes jumping between the two systems easier.
+This is part of my attempt to add some of the best of Org mode to LaTeX.
+This also makes it easier to jump between the two systems.
 
 Org mode lets you refile a subtree anywhere, show one subtree in an indirect buffer, build a sparse tree, and reshape plain lists with the Meta-arrow keys. 
 This package brings those commands to LaTeX. 
