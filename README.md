@@ -1,18 +1,16 @@
-# latex-structure
+# Org-style structure editing for LaTeX buffers in Emacs
 
-Org-style structure editing for LaTeX buffers in Emacs.
+I work both in org-mode and LaTeX documents every day.
+Org mode has features that LaTeX lacks, and I miss them.
+This is part of my attempt to add some of the best of org mode to LaTeX.
+This also makes jumping between the two systems easier.
 
-Org mode lets you refile a subtree anywhere, show one subtree in an
-indirect buffer, build a sparse tree, and reshape plain lists with the
-Meta-arrow keys. This package brings those commands to LaTeX. It
-treats `\section`, `\subsection`, and the other sectioning commands as
-Org headlines, and it treats the items of `itemize`, `enumerate`, and
-`description` as Org plain list items.
+Org mode lets you refile a subtree anywhere, show one subtree in an indirect buffer, build a sparse tree, and reshape plain lists with the Meta-arrow keys. 
+This package brings those commands to LaTeX. 
+It treats `\section`, `\subsection`, and the other sectioning commands as Org headlines, and it treats the items of `itemize`, `enumerate`, and `description` as Org plain list items.
 
-It is a companion to
-[latex-speed-commands](https://github.com/MooersLab/latex-speed-commands-el),
-but it does not depend on it. Both work with AUCTeX (`LaTeX-mode`) and
-with the built-in `latex-mode`.
+It is a companion to [latex-speed-commands](https://github.com/MooersLab/latex-speed-commands-el),
+but it does not depend on it. Both work with AUCTeX (`LaTeX-mode`) and with the built-in `latex-mode`.
 
 ## Installation
 
@@ -36,8 +34,7 @@ With `use-package` and a local checkout:
 ## Key bindings
 
 The Meta-arrow keys act only on a heading line or inside a list item.
-Everywhere else they keep their usual meaning, so `M-<left>` still
-moves back one word in body text.
+Everywhere else they keep their usual meaning, so `M-<left>` still moves back one word in body text.
 
 | Key           | On a heading line         | In a list item               | Org analog              |
 |---------------|---------------------------|------------------------------|-------------------------|
@@ -59,46 +56,38 @@ moves back one word in body text.
 
 ## Refiling across a book
 
-`latex-structure-refile` offers every heading in every file of the
-document. It starts from the master file (`TeX-master` in AUCTeX,
-`tex-main-file` in the built-in mode, or the current file) and follows
-`\input`, `\include`, `\subfile`, `\import`, and `\subimport` in
-document order. Each file also offers a "top level" target.
+`latex-structure-refile` offers every heading in every file of the document. 
+It starts from the master file (`TeX-master` in AUCTeX, `tex-main-file` in the built-in mode, or the current file) and follows `\input`, `\include`, `\subfile`, `\import`, and `\subimport` in document order. 
+Each file also offers a "top level" target.
 
-The section becomes the last child of the target. Its headings change
-rank to fit, so a `\section` refiled under another `\section` becomes
-a `\subsection`, and its subsections move down one rank too. Set
-`latex-structure-refile-adjust-levels` to nil to keep the levels.
+The section becomes the target's last child. 
+Its headings change rank to fit, so a `\section` refiled under another `\section` becomes a `\subsection`, and its subsections move down one rank too. 
+Set `latex-structure-refile-adjust-levels` to nil to keep the levels.
 
-A section never swallows `\end{document}`, the bibliography, or an
-`\include` line of the master file. See
-`latex-structure-section-boundary-regexp`.
+A section never swallows `\end{document}`, the bibliography, or an `\include` line of the master file. 
+See `latex-structure-section-boundary-regexp`.
 
-Refiling into another chapter file visits that file and leaves it
-modified but unsaved, so you can review the change before saving.
+Refiling into another chapter file visits that file and leaves it modified but unsaved, so you can review the change before saving.
 
 ## List items
 
-The item commands understand nested lists. An item carries its own
-nested lists with it when it moves.
+The item commands understand nested lists. 
+An item carries its own nested lists with it when it moves.
 
-* Indenting an item makes it the last child of the previous item. It
-  joins the nested list that ends the previous item, or a new list of
-  the same type.
-* Outdenting an item makes it the sibling that follows its parent
-  item. A nested list left empty is removed.
-* `C-c -` cycles the innermost list through `itemize`, `enumerate`,
-  and `description`. With `C-u` it asks for the type.
+* Indenting an item makes it the last child of the previous item.
+  It joins the nested list that ends the previous item, or a new list of the same type.
+* Outdenting an item makes it the sibling that follows its parent item.
+  A nested list left empty is removed.
+* `C-c -` cycles the innermost list through `itemize`, `enumerate`, and `description`.
+  With `C-u` it asks for the type.
 
-Add enumitem clones or custom lists to
-`latex-structure-list-environments`. The list text is reindented with
-the major mode's indentation after an indent or outdent. Set
-`latex-structure-reindent` to nil to turn that off.
+Add enumitem clones or custom lists to `latex-structure-list-environments`. 
+The list text is reindented with the major mode's indentation after an indent or outdent. 
+Set `latex-structure-reindent` to nil to turn that off.
 
 ## Speed commands
 
-If you also use latex-speed-commands, add single-key commands after
-both packages load:
+If you also use latex-speed-commands, add single-key commands after both packages load:
 
 ```elisp
 (with-eval-after-load 'latex-speed-commands
@@ -106,7 +95,7 @@ both packages load:
   (latex-structure-speed-commands-setup))
 ```
 
-At the beginning of a heading line this adds:
+At the beginning of a heading line, this adds:
 
 | Key | Command                                   |
 |-----|-------------------------------------------|
@@ -115,8 +104,7 @@ At the beginning of a heading line this adds:
 | `T` | Show the section in an indirect buffer    |
 | `/` | Sparse tree (replaces `occur`)            |
 
-At the beginning of an `\item` line (column zero or just before
-`\item`) it adds:
+At the beginning of an `\item` line (column zero or just before `\item`) it adds:
 
 | Key | Command                 |
 |-----|-------------------------|
